@@ -3,6 +3,9 @@ import React from 'react';
 class Header extends React.Component<any, any> {
     constructor(props) {
         super(props);
+        this.state = {
+            nama: JSON.parse(localStorage.getItem("user-cozystok")).name
+        }
     }
 
     render(): React.ReactNode {
@@ -12,7 +15,7 @@ class Header extends React.Component<any, any> {
                     <div className="navbar-header">
                         <div className="d-flex">
                             <div className="navbar-brand-box">
-                                <a href="index.html" className="logo logo-dark">
+                                <a href="/dashboard" className="logo logo-dark">
                                     <span className="logo-sm">
                                         <img src="assets/images/logo-sm-dark.png" alt="" height="22" />
                                     </span>
@@ -21,7 +24,7 @@ class Header extends React.Component<any, any> {
                                     </span>
                                 </a>
 
-                                <a href="index.html" className="logo logo-light">
+                                <a href="/dashboard" className="logo logo-light">
                                     <span className="logo-sm">
                                         <img src="assets/images/logo-sm-light.png" alt="" height="22" />
                                     </span>
@@ -37,28 +40,6 @@ class Header extends React.Component<any, any> {
                         </div>
 
                         <div className="d-flex">
-
-                            <div className="dropdown d-inline-block d-lg-none ml-2">
-                                <button type="button" className="btn header-item noti-icon waves-effect" id="page-header-search-dropdown"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i className="mdi mdi-magnify"></i>
-                                </button>
-                                <div className="dropdown-menu dropdown-menu-lg dropdown-menu-right p-0"
-                                    aria-labelledby="page-header-search-dropdown">
-
-                                    <form className="p-3">
-                                        <div className="form-group m-0">
-                                            <div className="input-group">
-                                                <input type="text" className="form-control" placeholder="Search ..." aria-label="Recipient's username" />
-                                                <div className="input-group-append">
-                                                    <button className="btn btn-primary" type="submit"><i className="mdi mdi-magnify"></i></button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-
                             <div className="dropdown d-inline-block">
                                 <button type="button" className="btn header-item noti-icon waves-effect" id="page-header-notifications-dropdown"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -150,7 +131,7 @@ class Header extends React.Component<any, any> {
                                 <button type="button" className="btn header-item waves-effect">
                                     <img className="rounded-circle header-profile-user" src="assets/images/users/avatar-1.jpg"
                                         alt="Header Avatar" />
-                                    <span className="d-none d-sm-inline-block ml-1">Shane</span>
+                                    <span className="d-none d-sm-inline-block ml-1">{this.state.nama}</span>
                                 </button>
                             </div>
                         </div>

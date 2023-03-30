@@ -10,6 +10,17 @@ import { Button } from "react-bootstrap";
 class Material extends React.Component<any, any> {
     constructor(props) {
         super(props);
+        this.state = {
+            count: 0,
+        }
+
+        this.setCount = this.setCount.bind(this);
+    }
+
+    setCount(count) {
+        this.setState({
+            count: count
+        })
     }
 
     render(): React.ReactNode {
@@ -39,13 +50,13 @@ class Material extends React.Component<any, any> {
                                             </span>
                                         </div>
                                     </div>
-                                    <h4 className="m-0 align-self-center">100 Pcs</h4>
+                                    <h4 className="m-0 align-self-center">{this.state.count} Pcs</h4>
                                 </div>
                             </div>
 
                             <div className="mb-3 text-right">
                                 <Link to={'/tambah_material'} className="btn btn-primary">Tambah Material</Link>
-                                <Link to={'/tambah_kategori'} className="btn btn-success ml-2">Tambah Kategori Material</Link>
+                                <Link to={'/tambah_kategori'} className="btn btn-success ml-2">List Kategori Material</Link>
                             </div>
 
                             <div className="card">
@@ -54,15 +65,11 @@ class Material extends React.Component<any, any> {
                                         <div className="flex-grow-1">
                                             <h5>Material</h5>
                                         </div>
-                                        <div>
-                                            <div className="text-right">
-                                                <Button className="btn btn-info">Filter</Button>
-                                            </div>
-                                        </div>
+
                                     </div>
                                     <hr />
 
-                                    <ListMaterial />
+                                    <ListMaterial setCount={this.setCount} />
                                 </div>
                             </div>
                         </div>

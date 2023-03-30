@@ -10,6 +10,9 @@ import ListAll from './list/ListAll';
 import ListMasuk from './list/ListMasuk';
 import ListKeluar from './list/ListKeluar';
 import ModalPrintStok from './modal/ModalPrintStok';
+import 'react-toastify/dist/ReactToastify.min.css';
+import { ToastContainer, toast } from 'react-toastify';
+import { withRouter } from './etc/withRouter';
 
 class ListStok extends React.Component<any, any> {
     constructor(props) {
@@ -20,6 +23,16 @@ class ListStok extends React.Component<any, any> {
 
         this.handleClose = this.handleClose.bind(this);
         this.handleOpen = this.handleOpen.bind(this);
+    }
+
+    componentDidMount(): void {
+        setTimeout(() => {
+            if (this.props.location.state?.code === true) {
+                toast.success(this.props.location.state.msg);
+            } else if (this.props.location.state?.code === false) {
+                toast.error(this.props.location.state.msg);
+            }
+        }, 500)
     }
 
     handleClose() {
@@ -43,6 +56,19 @@ class ListStok extends React.Component<any, any> {
                     <Header />
                     <Sidebar />
                 </div>
+
+                <ToastContainer
+                    position="top-right"
+                    autoClose={5000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme="light"
+                />
 
                 <div className="main-content">
                     <div className="page-content">
@@ -98,4 +124,4 @@ class ListStok extends React.Component<any, any> {
     }
 }
 
-export default ListStok;
+export default withRouter(ListStok);
