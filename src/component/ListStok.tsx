@@ -13,12 +13,14 @@ import ModalPrintStok from './modal/ModalPrintStok';
 import 'react-toastify/dist/ReactToastify.min.css';
 import { ToastContainer, toast } from 'react-toastify';
 import { withRouter } from './etc/withRouter';
+import ListModified from './list/ListModified';
 
 class ListStok extends React.Component<any, any> {
     constructor(props) {
         super(props);
         this.state = {
             isOpen: false,
+            sort: "all",
         }
 
         this.handleClose = this.handleClose.bind(this);
@@ -110,6 +112,16 @@ class ListStok extends React.Component<any, any> {
                                             <h5>List Stok Masuk</h5>
                                             <hr />
                                             <ListKeluar />
+                                        </div>
+                                    </div>
+                                </Tab>
+                                <Tab eventKey="modified" title="Modified Stok">
+                                    <div className='card'>
+                                        <div className='card-body'>
+                                            <h5>List Modified Stok</h5>
+                                            <hr />
+
+                                            <ListModified sort={this.state.sort} />
                                         </div>
                                     </div>
                                 </Tab>

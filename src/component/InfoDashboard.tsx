@@ -1,8 +1,31 @@
 import React from "react";
+import Stok from "./module/Stok";
+import System from "./module/System";
 
 class InfoDashboard extends React.Component<any, any> {
     constructor(props) {
         super(props);
+        this.state = {
+            data: [],
+            data_auth: localStorage.getItem("user-cozystok"),
+        }
+
+        this.getSum = this.getSum.bind(this);
+    }
+
+    componentDidMount(): void {
+        this.getSum();
+    }
+
+    getSum() {
+        Stok.getSum(this.state.data_auth).then((result) => {
+            console.log(result);
+            this.setState({
+                data: result.data.data.sum,
+            })
+        }).catch((rejects) => {
+            console.log(rejects);
+        })
     }
 
     render(): React.ReactNode {
@@ -22,8 +45,7 @@ class InfoDashboard extends React.Component<any, any> {
                                         </span>
                                     </div>
                                 </div>
-                                <h4 className="m-0 align-self-center">Rp. 30.000.000</h4>
-                                <p className="mb-0 mt-3 text-muted">Updated 23-05-2023 10:00:21</p>
+                                <h4 className="m-0 align-self-center">Rp. {this.state.data.sum_total_asset === undefined ? 0 : System.convertRupiah(this.state.data.sum_total_asset)}</h4>
 
                             </div>
                         </div>
@@ -43,8 +65,7 @@ class InfoDashboard extends React.Component<any, any> {
                                         </span>
                                     </div>
                                 </div>
-                                <h4 className="m-0 align-self-center">100 Pcs</h4>
-                                <p className="mb-0 mt-3 text-muted">Updated 23-05-2023 05:03:33</p>
+                                <h4 className="m-0 align-self-center">{this.state.data.sum_stok_all} Pcs</h4>
                             </div>
                         </div>
                     </div>
@@ -63,8 +84,7 @@ class InfoDashboard extends React.Component<any, any> {
                                         </span>
                                     </div>
                                 </div>
-                                <h4 className="m-0 align-self-center">50 Pcs</h4>
-                                <p className="mb-0 mt-3 text-muted">Total Asset: Rp. 30.000.000</p>
+                                <h4 className="m-0 align-self-center">{this.state.data.sum_stok_in} Pcs</h4>
                             </div>
                         </div>
                     </div>
@@ -82,8 +102,7 @@ class InfoDashboard extends React.Component<any, any> {
                                         </span>
                                     </div>
                                 </div>
-                                <h4 className="m-0 align-self-center">20 Pcs</h4>
-                                <p className="mb-0 mt-3 text-muted">Total Asset: Rp. 10.000.000</p>
+                                <h4 className="m-0 align-self-center">{this.state.data.sum_stok_out} Pcs</h4>
                             </div>
                         </div>
                     </div>
@@ -104,8 +123,7 @@ class InfoDashboard extends React.Component<any, any> {
                                         </span>
                                     </div>
                                 </div>
-                                <h4 className="m-0 align-self-center">Rp. 30.000.000</h4>
-                                <p className="mb-0 mt-3 text-muted">Updated 23-05-2023 10:00:21</p>
+                                <h4 className="m-0 align-self-center">Rp. {this.state.data.sum_asset_in === undefined ? 0 : System.convertRupiah(this.state.data.sum_asset_in)}</h4>
 
                             </div>
                         </div>
@@ -125,8 +143,7 @@ class InfoDashboard extends React.Component<any, any> {
                                         </span>
                                     </div>
                                 </div>
-                                <h4 className="m-0 align-self-center">Rp. 20.000.000</h4>
-                                <p className="mb-0 mt-3 text-muted">Updated 23-05-2023 05:03:33</p>
+                                <h4 className="m-0 align-self-center">Rp. {this.state.data.sum_asset_out === undefined ? 0 : System.convertRupiah(this.state.data.sum_asset_out)}</h4>
                             </div>
                         </div>
                     </div>

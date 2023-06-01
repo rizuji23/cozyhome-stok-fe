@@ -1,14 +1,11 @@
 import React from "react";
 import DataTable from "react-data-table-component";
+import moment from 'moment';
 import Stok from "../module/Stok";
-import moment from "moment";
-import { Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
 
-class ListAll extends React.Component<any, any> {
+class ListModified extends React.Component<any, any> {
     constructor(props) {
         super(props);
-
         this.state = {
             column: [
                 {
@@ -32,49 +29,74 @@ class ListAll extends React.Component<any, any> {
                     sortable: true,
                 },
                 {
+                    name: "Stok Masuk",
+                    selector: row => row.stok_in,
+                    sortable: true,
+                },
+                {
+                    name: "Stok Out",
+                    selector: row => row.stok_out,
+                    sortable: true,
+                },
+                {
+                    name: "Last Stok",
+                    selector: row => row.last_stok,
+                    sortable: true,
+                },
+                {
+                    name: "Keterangan",
+                    selector: row => row.keterangan,
+                    sortable: true,
+                },
+                {
+                    name: "Tanggal",
+                    selector: row => row.created_at,
+                    sortable: true,
+                },
+                {
                     name: "Tanggal Update",
                     selector: row => row.updated_at,
                     sortable: true,
                 },
-                {
-                    name: "Opsi",
-                    selector: row => row.opsi,
-                    sortable: true,
-                }
             ],
 
             data: [],
-            data_auth: localStorage.getItem("user-cozystok"),
             loading: true,
+            data_auth: localStorage.getItem("user-cozystok"),
             search: "",
+            sort: "all",
         }
 
         this.handleSearch = this.handleSearch.bind(this);
-        this.getStokGudang = this.getStokGudang.bind(this);
+        this.getModifiedIn = this.getModifiedIn.bind(this);
+        this.handleFilter = this.handleFilter.bind(this);
     }
 
-    componentDidMount(): void {
-        this.getStokGudang();
-    }
+    getModifiedIn() {
+        this.setState({
+            loading: true,
+        });
 
-    getStokGudang() {
-        Stok.get(this.state.data_auth).then((result) => {
-            console.log(result);
+        Stok.getModifiedIn({ sort: this.state.sort }, this.state.data_auth).then((result) => {
+
             let no = 1;
-            result.data.data.stok.map(el => {
+            result.data.data.modified_stok.map(el => {
                 el['no'] = no++;
                 el['created_at'] = moment(el.created_at).format("DD-MM-YYYY HH:mm:ss");
                 el['updated_at'] = moment(el.updated_at).format("DD-MM-YYYY HH:mm:ss");
-                el['opsi'] = <><Link to={`/print/stok/${el.id_stok_gudang}`} className="btn btn-info btn-sm">Print</Link></>
             })
 
             this.setState(prevState => ({
-                data: result.data.data.stok,
+                data: result.data.data.modified_stok,
                 loading: false,
-            }));
+            }))
         }).catch((rejects) => {
             console.log(rejects);
         });
+    }
+
+    componentDidMount(): void {
+        this.getModifiedIn();
     }
 
     handleSearch(e) {
@@ -83,13 +105,37 @@ class ListAll extends React.Component<any, any> {
         })
     }
 
+    handleFilter(e) {
+        if (e.target.value.length === 0) {
+            this.setState({
+                sort: "all",
+            }, () => {
+                this.getModifiedIn()
+            });
+        } else {
+            this.setState({
+                sort: e.target.value,
+            }, () => {
+                this.getModifiedIn()
+            })
+        }
+    }
+
     render(): React.ReactNode {
         return (
             <>
                 <div className="mt-3 mb-3 d-flex flex-row-reverse">
+                    <div className="ml-2">
+                        <select name="" onChange={this.handleFilter} className="form-control" id="">
+                            <option value="">Filter</option>
+                            <option value="Stok Masuk">Stok Masuk</option>
+                            <option value="Stok Keluar">Stok Keluar</option>
+                        </select>
+                    </div>
                     <div>
                         <input type="text" onChange={this.handleSearch} className="form-control" placeholder="Cari Nama Material" />
                     </div>
+
                 </div>
                 <DataTable columns={this.state.column} progressPending={this.state.loading} data={this.state.data.filter((data) => {
                     if (this.state.search === "") {
@@ -103,4 +149,4 @@ class ListAll extends React.Component<any, any> {
     }
 }
 
-export default ListAll;
+export default ListModified;

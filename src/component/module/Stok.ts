@@ -118,6 +118,30 @@ class Stok {
         });
     }
 
+    static async getModifiedIn(data, data_auth):Promise<any> {
+        const auth:any = JSON.parse(data_auth);
+        return new Promise((res, rej) => {
+            axios({
+                url: "/api/v1/modified/",
+                method: "GET",
+                headers: {
+                    Accept: "application/json",
+                    "Authorization": "Bearer " + auth.access
+                },
+                params: data
+            }).then((result) => {
+                console.log(result);
+                if (result.status === 200) {
+                    res({response: true, data: result.data})
+                } else {
+                    rej({response: false, data: "invalid"});
+                }
+            }).catch((reject) => {
+                rej({response: false, data: "error"});
+            });
+        });
+    }
+
     static async getMaterial(data, data_auth):Promise<any> {
         const auth:any = JSON.parse(data_auth);
         return new Promise((res, rej) => {
@@ -171,6 +195,29 @@ class Stok {
         return new Promise((res, rej) => {
             axios({
                 url: "/api/v1/stok_count/",
+                method: "GET",
+                headers: {
+                    Accept: "application/json",
+                    "Authorization": "Bearer " + auth.access
+                },
+            }).then((result) => {
+                console.log(result);
+                if (result.status === 200) {
+                    res({response: true, data: result.data})
+                } else {
+                    rej({response: false, data: "invalid"});
+                }
+            }).catch((reject) => {
+                rej({response: false, data: "error"});
+            });
+        });
+    }
+
+    static async getSum(data_auth):Promise<any> {
+        const auth:any = JSON.parse(data_auth);
+        return new Promise((res, rej) => {
+            axios({
+                url: "/api/v1/stok_sum/",
                 method: "GET",
                 headers: {
                     Accept: "application/json",

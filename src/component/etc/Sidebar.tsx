@@ -46,7 +46,7 @@ class Sidebar extends React.Component<any, any> {
                                 </li>
 
                                 <li>
-                                    <NavLink className="waves-effect" href="/">
+                                    <NavLink className="waves-effect" href="/logout">
                                         <span className="mdi mdi-logout"></span>&nbsp;&nbsp;&nbsp;
                                         <span>Logout</span>
                                     </NavLink>

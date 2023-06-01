@@ -10,9 +10,23 @@ import Material from './component/Material';
 import AddMaterial from './component/AddMaterial';
 import AddKategoriMaterial from './component/AddKategoriMaterial';
 import Pengaturan from './component/Pengaturan';
+import { withRouter } from './component/etc/withRouter';
+import Logout from './component/etc/Logout';
+import PrintPerbandingan from './component/print/PrintPerbandingan';
 
 
 class App extends React.Component<any, any> {
+  constructor(props) {
+    super(props);
+    console.log(props);
+  }
+
+  componentDidUpdate(prevProps: Readonly<any>, prevState: Readonly<any>, snapshot?: any): void {
+    if (prevProps.location.pathname !== this.props.location.pathname) {
+      main();
+    }
+  }
+
   componentDidMount(): void {
     main();
   }
@@ -28,10 +42,11 @@ class App extends React.Component<any, any> {
         <Route path='/tambah_material' element={<AddMaterial />}></Route>
         <Route path='/tambah_kategori' element={<AddKategoriMaterial />}></Route>
         <Route path='/pengaturan' element={<Pengaturan />}></Route>
-
+        <Route path='/logout' element={<Logout />}></Route>
+        <Route path='/print/banding/:id' element={<PrintPerbandingan />}></Route>
       </Routes>
     )
   }
 }
 
-export default App;
+export default withRouter(App);
