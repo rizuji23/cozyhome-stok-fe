@@ -1,18 +1,12 @@
-import React from 'react';
-import HelmetTitle from './etc/HelmetTitle';
-import Sidebar from './etc/Sidebar';
-import Header from './etc/Header';
-import Title from './etc/Title';
-import { Button } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import MaterialModule from './module/MaterialModule';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.min.css';
-import System from './module/System';
-import LoadingButton from './etc/LoadingButton';
-import ModalAddKategori from './modal/ModalAddKategori';
+import React from "react";
+import { Button, Modal } from "react-bootstrap";
+import System from "../module/System";
+import MaterialModule from "../module/MaterialModule";
+import { toast } from "react-toastify";
+import LoadingButton from "../etc/LoadingButton";
+import ModalAddKategori from "./ModalAddKategori";
 
-class AddMaterial extends React.Component<any, any> {
+class ModalAddMaterial extends React.Component<any, any> {
     constructor(props) {
         super(props);
         this.state = {
@@ -156,6 +150,10 @@ class AddMaterial extends React.Component<any, any> {
     }
 
     componentDidUpdate(prevProps: Readonly<any>, prevState: Readonly<any>, snapshot?: any): void {
+        if (prevProps.isOpen != this.props.isOpen) {
+            this.getKategori();
+        }
+
         if (prevState.isOpen != this.state.isOpen) {
             this.getKategori();
         }
@@ -164,69 +162,43 @@ class AddMaterial extends React.Component<any, any> {
     render(): React.ReactNode {
         return (
             <>
-                <HelmetTitle title="Tambah Material" />
-                <ToastContainer
-                    position="top-right"
-                    autoClose={5000}
-                    hideProgressBar={false}
-                    newestOnTop={false}
-                    closeOnClick
-                    rtl={false}
-                    pauseOnFocusLoss
-                    draggable
-                    pauseOnHover
-                    theme="light"
-                />
-
-                <div id="layout-wrapper">
-                    <Header />
-                    <Sidebar />
-                </div>
-
-                <div className="main-content">
-                    <div className="page-content">
-                        <div className="container-fluid">
-                            <Title title="Tambah Material" />
-
-                            <div className='card'>
-                                <div className='card-body'>
-                                    <h5>Tambah Material</h5>
-                                    <hr />
-
-                                    <div className='form-group'>
-                                        <label htmlFor="">Nama Material</label>
-                                        <input type="text" value={this.state.material.nama_material} onChange={this.handleNamaMaterial} className='form-control' />
-                                    </div>
-
-                                    <div className='form-group mt-3'>
-                                        <label htmlFor="">Kategori</label>
-                                        <select name="" onChange={this.handleKategori} className='form-control' id="">
-                                            <option value="">Pilih Kategori</option>
-                                            {this.state.kategori}
-                                        </select>
-
-                                        <a href="#" onClick={this.handleOpenKategori}>Tambah Kategori Baru?</a>
-                                    </div>
-
-                                    <div className='form-group mt-3'>
-                                        <label htmlFor="">Harga</label>
-                                        <input type="text" value={System.convertRupiah(this.state.material.harga)} onChange={this.handleHarga} className='form-control' />
-                                    </div>
-
-                                    <div className='mt-3 text-right'>
-                                        <Link to={'/material_all'} className='btn btn-danger'>Kembali</Link>
-                                        <Button className='btn btn-primary ml-2' onClick={this.handleSimpan} disabled={this.state.disabled}>Tambah <LoadingButton show={this.state.loading} /></Button>
-                                    </div>
-                                </div>
-                            </div>
+                <Modal show={this.props.isOpen} onHide={this.props.handleClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Tambah Material Baru</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <div className='form-group'>
+                            <label htmlFor="">Nama Material</label>
+                            <input type="text" value={this.state.material.nama_material} onChange={this.handleNamaMaterial} className='form-control' />
                         </div>
-                    </div>
-                </div>
+
+                        <div className='form-group mt-3'>
+                            <label htmlFor="">Kategori</label>
+                            <select name="" onChange={this.handleKategori} className='form-control' id="">
+                                <option value="">Pilih Kategori</option>
+                                {this.state.kategori}
+                            </select>
+                            <a href="#" onClick={this.handleOpenKategori}>Tambah Kategori Baru?</a>
+                        </div>
+
+                        <div className='form-group mt-3'>
+                            <label htmlFor="">Harga</label>
+                            <input type="text" value={System.convertRupiah(this.state.material.harga)} onChange={this.handleHarga} className='form-control' />
+                        </div>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="danger" onClick={this.props.handleClose}>
+                            Batal
+                        </Button>
+                        <Button className='btn btn-primary' onClick={this.handleSimpan} disabled={this.state.disabled}>Tambah <LoadingButton show={this.state.loading} /></Button>
+                    </Modal.Footer>
+                </Modal>
 
                 <ModalAddKategori handleClose={this.handleCloseKategori} isOpen={this.state.isOpen} />
+
             </>
         )
     }
 }
 
-export default AddMaterial;
+export default ModalAddMaterial;

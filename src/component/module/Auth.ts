@@ -74,6 +74,38 @@ class Auth {
         });
     }
 
+    static async updateProfile(data, data_auth):Promise<any> {
+        const auth:any = JSON.parse(data_auth);
+        const formData = new FormData();
+        formData.append("first_name", data.first_name)
+        formData.append("last_name", data.last_name)
+        formData.append("img", data.img[0])
+        formData.append("email", data.email)
+        formData.append("user", data.user)
+        return new Promise((res, rej) => {
+            axios({
+                url: 'api/v1/update_info/',
+                method: 'POST',
+                headers: {
+                    'Content-Type':  `multipart/form-data;`,
+                    'Authorization': 'Bearer ' + auth.access,
+                },
+                data: formData
+            }).then((result) => {
+                console.log(result);
+                if (result.status === 201) {
+                    res({response: true, data: result.data});
+                } else {
+                    rej({response: false, data: 'invalid'});
+                }
+            }).catch((reject) => {
+                console.log(reject);
+
+                rej({response: false, data: "Username Atau Password Salah"});
+            });
+        });
+    }
+
     static async logout(data_auth):Promise<any> {
         const auth:any = JSON.parse(data_auth);
         return new Promise((res, rej) => {

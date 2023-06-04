@@ -11,6 +11,7 @@ import AlertBottom from './etc/AlertBottom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
 import LoadingButton from './etc/LoadingButton';
+import ModalAddMaterial from './modal/ModalAddMaterial';
 
 class AddStokIn extends React.Component<any, any> {
     constructor(props) {
@@ -38,6 +39,7 @@ class AddStokIn extends React.Component<any, any> {
             disabled: true,
             loading: false,
             navigation: false,
+            isOpen: false,
         }
 
         this.getMaterial = this.getMaterial.bind(this);
@@ -46,6 +48,8 @@ class AddStokIn extends React.Component<any, any> {
         this.handleKeterangan = this.handleKeterangan.bind(this);
         this.handleSimpan = this.handleSimpan.bind(this);
         this.clearState = this.clearState.bind(this);
+        this.handleOpenMaterial = this.handleOpenMaterial.bind(this);
+        this.handleCloseMaterial = this.handleCloseMaterial.bind(this);
     }
 
     clearState() {
@@ -269,6 +273,24 @@ class AddStokIn extends React.Component<any, any> {
         this.getMaterial();
     }
 
+    handleOpenMaterial() {
+        this.setState({
+            isOpen: true,
+        })
+    }
+
+    handleCloseMaterial() {
+        this.setState({
+            isOpen: false,
+        })
+    }
+
+    componentDidUpdate(prevProps: Readonly<any>, prevState: Readonly<any>, snapshot?: any): void {
+        if (prevState.isOpen != this.state.isOpen) {
+            this.getMaterial();
+        }
+    }
+
     render(): React.ReactNode {
         return (
             <>
@@ -298,7 +320,6 @@ class AddStokIn extends React.Component<any, any> {
                     <div className="page-content">
                         <div className="container-fluid">
                             <Title title="Tambah Stok Masuk" />
-
                             <div className='card'>
                                 <div className='card-body'>
                                     <div className='form-group'>
@@ -307,6 +328,7 @@ class AddStokIn extends React.Component<any, any> {
                                             <option value="{}">Pilih Material</option>
                                             {this.state.comp_material}
                                         </select>
+                                        <a href="#" onClick={this.handleOpenMaterial}>Tambah Material Baru?</a>
                                     </div>
 
                                     <div className='form-group mt-3'>
@@ -318,6 +340,7 @@ class AddStokIn extends React.Component<any, any> {
                                     <div className='form-group mt-3'>
                                         <label htmlFor="">Keterangan</label>
                                         <textarea name="" className='form-control' onChange={this.handleKeterangan} id="" cols={30} rows={10}></textarea>
+
                                     </div>
 
                                     <div className='d-flex'>
@@ -378,6 +401,8 @@ class AddStokIn extends React.Component<any, any> {
                         </div>
                     </div>
                 </div>
+
+                <ModalAddMaterial isOpen={this.state.isOpen} handleClose={this.handleCloseMaterial} />
             </>
         )
     }

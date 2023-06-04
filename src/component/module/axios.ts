@@ -1,5 +1,8 @@
 import axios from "axios";
 
+const URL_DEV = 'http://localhost:8000';
+const URL_PRODUCTION = 'http://cozyhome.api.weworks.ink'
+
 export default axios.create({
-    baseURL: 'http://cozyhome.api.weworks.ink'
+    baseURL: URL_DEV
 });

@@ -12,6 +12,7 @@ import MaterialModule from './module/MaterialModule';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
 import moment from 'moment';
+import ModalAddKategori from './modal/ModalAddKategori';
 
 class AddKategoriMaterial extends React.Component<any, any> {
     constructor(props) {
@@ -165,6 +166,7 @@ class AddKategoriMaterial extends React.Component<any, any> {
                         </div>
                     </div>
                 </div>
+
             </>
         )
     }

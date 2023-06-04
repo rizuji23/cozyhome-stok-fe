@@ -25,6 +25,12 @@ class Pengaturan extends React.Component<any, any> {
             loading: false,
             data_auth: localStorage.getItem("user-cozystok"),
             navigation: false,
+            info: {
+                img: "",
+                first_name: "",
+                last_name: "",
+                email: "",
+            },
         }
 
         this.validated = this.validated.bind(this);
@@ -32,6 +38,11 @@ class Pengaturan extends React.Component<any, any> {
         this.handleNewPassword = this.handleNewPassword.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.clearState = this.clearState.bind(this);
+        this.handleFirstName = this.handleFirstName.bind(this);
+        this.handleLastName = this.handleLastName.bind(this);
+        this.handleEmail = this.handleEmail.bind(this);
+        this.handleUploadInput = this.handleUploadInput.bind(this);
+        this.handleChangeProfile = this.handleChangeProfile.bind(this);
     }
 
     validated() {
@@ -107,6 +118,100 @@ class Pengaturan extends React.Component<any, any> {
         })
     }
 
+    handleUploadInput(e) {
+        this.setState(prevState => ({
+            info: {
+                ...prevState.info,
+                img: e.target.files
+            }
+        }));
+    }
+
+    handleFirstName(e) {
+        this.setState(prevState => ({
+            info: {
+                ...prevState.info,
+                first_name: e.target.value,
+            }
+        }))
+    }
+
+    handleLastName(e) {
+        this.setState(prevState => ({
+            info: {
+                ...prevState.info,
+                last_name: e.target.value,
+            }
+        }))
+    }
+
+    handleEmail(e) {
+        this.setState(prevState => ({
+            info: {
+                ...prevState.info,
+                email: e.target.value,
+            }
+        }))
+    }
+
+    getUserDetail() {
+        const data_auth = localStorage.getItem("user-cozystok");
+        Auth.check(data_auth).then((result: any) => {
+            console.log(result);
+            if (result.response === true) {
+                this.setState(prevState => ({
+                    img: result.data.data.detail_user.img,
+                    info: {
+                        ...prevState.info,
+                        first_name: result.data.data.user.first_name,
+                        last_name: result.data.data.user.last_name,
+                        email: result.data.data.user.email
+                    }
+                }))
+            }
+        })
+    }
+
+    componentDidMount(): void {
+        this.getUserDetail();
+    }
+
+    handleChangeProfile() {
+        this.setState({
+            disabled: true,
+            loading: true,
+        })
+        const data = {
+            img: this.state.info.img,
+            first_name: this.state.info.first_name,
+            last_name: this.state.info.last_name,
+            email: this.state.info.email,
+            user: JSON.parse(localStorage.getItem("user-cozystok")).id_user,
+        }
+
+        Auth.updateProfile(data, this.state.data_auth).then((result) => {
+            console.log(result);
+            this.setState({
+                disabled: false,
+                loading: false,
+                change_profile: this.state.info
+            }, () => {
+                this.getUserDetail();
+            });
+            toast.success("Detail username berhasil diubah");
+        }).catch((reject) => {
+            console.log(reject);
+            toast.error("Detail username gagal diubah");
+            this.setState({
+                disabled: true,
+                loading: false,
+                change_profile: true
+            }, () => {
+                this.getUserDetail();
+            });
+        })
+    }
+
 
     render(): React.ReactNode {
         return (
@@ -127,7 +232,7 @@ class Pengaturan extends React.Component<any, any> {
                 />
 
                 <div id="layout-wrapper">
-                    <Header />
+                    <Header change={this.state.change_profile} />
                     <Sidebar />
                 </div>
 
@@ -135,6 +240,41 @@ class Pengaturan extends React.Component<any, any> {
                     <div className="page-content">
                         <div className="container-fluid">
                             <Title title="Pengaturan" />
+                            <div className="card">
+                                <div className="card-body">
+                                    <h5>Ganti Profile</h5>
+                                    <hr />
+
+                                    <div className="d-flex">
+                                        <div>
+                                            <img className="rounded-circle" width={60} src={`http://localhost:8000${this.state.img}`}
+                                                alt="Header Avatar" />
+                                        </div>
+                                        <div className="align-self-center ml-3">
+                                            <input type="file" className="form-control" onChange={this.handleUploadInput} />
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div className="d-flex">
+                                        <div className="form-group flex-fill p-3">
+                                            <label htmlFor="">Nama Depan</label>
+                                            <input type="text" className="form-control" onChange={this.handleFirstName} value={this.state.info.first_name} />
+                                        </div>
+                                        <div className="form-group  flex-fill p-3">
+                                            <label htmlFor="">Nama Belakang</label>
+                                            <input type="text" className="form-control" onChange={this.handleLastName} value={this.state.info.last_name} />
+                                        </div>
+                                    </div>
+                                    <div className="form-group p-3">
+                                        <label htmlFor="">Email</label>
+                                        <input type="text" className="form-control" onChange={this.handleEmail} value={this.state.info.email} />
+                                    </div>
+
+                                    <div className="text-right">
+                                        <Button className="btn btn-primary" onClick={this.handleChangeProfile}>Ganti <LoadingButton show={this.state.loading} /></Button>
+                                    </div>
+                                </div>
+                            </div>
 
                             <div className="card">
                                 <div className="card-body">

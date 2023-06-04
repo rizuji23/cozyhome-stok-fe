@@ -1,10 +1,35 @@
 import React from 'react';
+import Auth from '../module/Auth';
 
 class Header extends React.Component<any, any> {
     constructor(props) {
         super(props);
         this.state = {
-            nama: JSON.parse(localStorage.getItem("user-cozystok")).name
+            nama: JSON.parse(localStorage.getItem("user-cozystok")).name,
+            img: "",
+        }
+    }
+
+    getUserDetail() {
+        const data_auth = localStorage.getItem("user-cozystok");
+        Auth.check(data_auth).then((result: any) => {
+            console.log(result);
+            if (result.response === true) {
+                this.setState(prevState => ({
+                    img: result.data.data.detail_user.img,
+                    nama: result.data.data.user.first_name + " " + result.data.data.user.last_name
+                }))
+            }
+        })
+    }
+
+    componentDidMount(): void {
+        this.getUserDetail();
+    }
+
+    componentDidUpdate(prevProps: Readonly<any>, prevState: Readonly<any>, snapshot?: any): void {
+        if (prevProps.change !== this.props.change) {
+            this.getUserDetail();
         }
     }
 
@@ -128,8 +153,8 @@ class Header extends React.Component<any, any> {
                             </div>
 
                             <div className="dropdown d-inline-block">
-                                <button type="button" className="btn header-item waves-effect">
-                                    <img className="rounded-circle header-profile-user" src="assets/images/users/avatar-1.jpg"
+                                <button type="button" onClick={() => document.location.href = '/pengaturan'} className="btn header-item waves-effect">
+                                    <img className="rounded-circle header-profile-user" width={60} src={`http://localhost:8000${this.state.img}`}
                                         alt="Header Avatar" />
                                     <span className="d-none d-sm-inline-block ml-1">{this.state.nama}</span>
                                 </button>
