@@ -1,5 +1,10 @@
 import React from "react";
 import { Button, Modal } from "react-bootstrap";
+import Stok from "../module/Stok";
+import moment from "moment";
+import { toast } from "react-toastify";
+import { Navigate } from "react-router-dom";
+import { withRouter } from "../etc/withRouter";
 
 class ModalPrintStok extends React.Component<any, any> {
     constructor(props) {
@@ -18,90 +23,59 @@ class ModalPrintStok extends React.Component<any, any> {
             },
             tipe_filter: "",
             comp_date: "",
-
+            date: {
+                start_date: "",
+                end_date: "",
+            },
+            month: "",
+            year: "",
+            data_auth: localStorage.getItem("user-cozystok"),
+            navigate: false,
         }
 
-        this.handleTipePrint = this.handleTipePrint.bind(this);
-        this.handleTipeFilter = this.handleTipeFilter.bind(this);
         this.handleTypeDate = this.handleTypeDate.bind(this);
+        this.handleStartDate = this.handleStartDate.bind(this);
+        this.handleEndDate = this.handleEndDate.bind(this);
+        this.handleMonth = this.handleMonth.bind(this);
+        this.handleYear = this.handleYear.bind(this);
+        this.handlePrint = this.handlePrint.bind(this);
     }
 
-    handleTipePrint(e) {
-        this.setState({
-            tipe_print: e.target.value,
-        })
-        if (e.target.value.length === 0) {
-            this.setState({
-                disabled: true,
-                error_print: {
-                    show: true,
-                    msg: "Tipe Print tidak boleh kosong.",
-                },
-                comp_filter: "",
-
-            });
-        } else {
-
-            if (e.target.value === "Semua") {
-                this.setState({
-                    comp_filter: <><div className="form-group">
-                        <label htmlFor="">Tipe Filter</label>
-                        <select name="" onChange={this.handleTypeDate} className="form-control" id="">
-                            <option value="">Pilih Tipe Filter</option>
-                            <option value="Semua">Semua</option>
-                            <option value="Tanggal">Tanggal</option>
-                            <option value="Bulan">Bulan</option>
-                            <option value="Tahun">Tahun</option>
-                        </select>
-                    </div></>
-                })
-            } else {
-                this.setState({
-                    comp_filter: "",
-                })
+    handleStartDate(e) {
+        this.setState(prevState => ({
+            date: {
+                ...prevState.date,
+                start_date: e.target.value,
             }
-        }
+        }));
     }
 
-    handleTipeFilter(e) {
-        this.setState({
-            tipe_filter: e.target.value,
-        })
-        if (e.target.value.length === 0) {
-            this.setState({
-                disabled: true,
-                error_filter: {
-                    show: true,
-                    msg: "Tipe Filter tidak boleh kosong.",
-                },
-
-            });
-        } else {
-
-            if (e.target.value === "Semua") {
-                this.setState({
-                    comp_filter: <><div className="form-group">
-                        <label htmlFor="">Tipe Filter</label>
-                        <select name="" onChange={this.handleTypeDate} className="form-control" id="">
-                            <option value="">Pilih Tipe Filter</option>
-                            <option value="Semua">Semua</option>
-                            <option value="Tanggal">Tanggal</option>
-                            <option value="Bulan">Bulan</option>
-                            <option value="Tahun">Tahun</option>
-                        </select>
-                    </div></>
-                })
-            } else {
-                this.setState({
-                    comp_filter: "",
-                    comp_date: "",
-                })
+    handleEndDate(e) {
+        this.setState(prevState => ({
+            date: {
+                ...prevState.date,
+                end_date: e.target.value,
             }
-        }
+        }))
+    }
+
+    handleMonth(e) {
+        this.setState({
+            month: e.target.value,
+        });
+    }
+
+    handleYear(e) {
+        this.setState({
+            year: e.target.value
+        })
     }
 
     handleTypeDate(e) {
-        console.log(e)
+        console.log(e);
+        this.setState({
+            tipe_filter: e.target.value,
+        })
         if (e.target.value.length !== 0) {
             if (e.target.value === "Semua") {
                 this.setState({
@@ -112,12 +86,12 @@ class ModalPrintStok extends React.Component<any, any> {
                     comp_date: <>
                         <div className="form-group">
                             <label htmlFor="">Dari Tanggal</label>
-                            <input type="date" className="form-control" />
+                            <input type="date" onChange={this.handleStartDate} className="form-control" />
                         </div>
 
                         <div className="form-group">
                             <label htmlFor="">Sampai Tanggal</label>
-                            <input type="date" className="form-control" />
+                            <input type="date" onChange={this.handleEndDate} className="form-control" />
                         </div>
                     </>
                 })
@@ -126,7 +100,7 @@ class ModalPrintStok extends React.Component<any, any> {
                     comp_date: <>
                         <div className="form-group">
                             <label htmlFor="">Bulan</label>
-                            <input type="month" className="form-control" />
+                            <input type="month" onChange={this.handleMonth} className="form-control" />
                         </div>
                     </>
                 });
@@ -135,7 +109,7 @@ class ModalPrintStok extends React.Component<any, any> {
                     comp_date: <>
                         <div className="form-group">
                             <label htmlFor="">Tahun</label>
-                            <input type="year" className="form-control" />
+                            <input type="year" onChange={this.handleYear} className="form-control" />
                         </div>
                     </>
                 })
@@ -153,26 +127,98 @@ class ModalPrintStok extends React.Component<any, any> {
 
     }
 
+    componentDidUpdate(prevProps: Readonly<any>, prevState: Readonly<any>, snapshot?: any): void {
+        if (prevProps.isOpen !== this.props.isOpen) {
+            this.setState({
+                tipe_print: "",
+                comp_filter: "",
+                disabled: true,
+                error_print: {
+                    show: false,
+                    msg: "",
+                },
+                error_filter: {
+                    show: false,
+                    msg: "",
+                },
+                tipe_filter: "",
+                comp_date: "",
+                date: {
+                    start_date: "",
+                    end_date: "",
+                },
+                month: "",
+                year: "",
+                data_auth: localStorage.getItem("user-cozystok"),
+            })
+        }
+    }
+
+    handlePrint() {
+        var data: any = {
+            tipe_filter: this.state.tipe_filter
+        };
+        if (this.state.tipe_filter === "Semua") {
+            data = {
+                ...data
+            }
+        } else if (this.state.tipe_filter === "Tanggal") {
+            data = {
+                ...data,
+                start_date: this.state.date.start_date,
+                end_date: this.state.date.end_date
+            }
+        } else if (this.state.tipe_filter === "Bulan") {
+            data = {
+                ...data,
+                month: moment(this.state.month).format("MM"),
+                year: moment(this.state.month).format("YYYY")
+            }
+        } else if (this.state.tipe_filter === "Tahun") {
+            data = {
+                ...data,
+                year: this.state.year,
+            }
+        } else {
+            data = {
+                ...data,
+            }
+        }
+
+        console.log("data", data)
+
+        Stok.printAll(data, this.state.data_auth).then((result) => {
+            console.log(result.data.data);
+            if (result.data.data.data.stok.length !== 0) {
+                this.setState({
+                    navigate: <Navigate to={'/print_all'} state={{ data: result.data.data, date: data }} />
+                });
+            } else {
+                toast.error("Data tidak ditemukan.")
+            }
+        })
+    }
+
     render(): React.ReactNode {
         return (
             <>
+                {this.state.navigate}
                 <Modal show={this.props.isOpen} onHide={this.props.handleClose}>
                     <Modal.Header closeButton>
                         <Modal.Title>Print Stok</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
+
                         <div className="form-group">
-                            <label htmlFor="">Tipe Print</label>
-                            <select name="" className="form-control" onChange={this.handleTipePrint} id="">
-                                <option value="">Pilih Tipe Print</option>
-                                <option value="Perbandingan">Perbandingan</option>
+                            <label htmlFor="">Tipe Filter</label>
+                            <select name="" onChange={this.handleTypeDate} className="form-control" id="">
+                                <option value="">Pilih Tipe Filter</option>
                                 <option value="Semua">Semua</option>
+                                <option value="Tanggal">Tanggal</option>
+                                <option value="Bulan">Bulan</option>
+                                <option value="Tahun">Tahun</option>
                             </select>
                         </div>
-
-                        {
-                            this.state.comp_filter
-                        }
 
                         {
                             this.state.comp_date
@@ -184,7 +230,7 @@ class ModalPrintStok extends React.Component<any, any> {
                         <Button variant="danger" onClick={this.props.handleClose}>
                             Batal
                         </Button>
-                        <Button variant="primary" onClick={this.props.handleClose}>
+                        <Button variant="primary" onClick={this.handlePrint}>
                             Print
                         </Button>
                     </Modal.Footer>
@@ -194,4 +240,4 @@ class ModalPrintStok extends React.Component<any, any> {
     }
 }
 
-export default ModalPrintStok;
+export default withRouter(ModalPrintStok);

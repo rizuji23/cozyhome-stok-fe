@@ -15,6 +15,8 @@ import Logout from './component/etc/Logout';
 import PrintPerbandingan from './component/print/PrintPerbandingan';
 import DetailStok from './component/DetailStok';
 import PrintDetail from './component/print/PrintDetail';
+import AuthCheck from './component/AuthCheck';
+import PrintAll from './component/print/PrintAll';
 
 
 class App extends React.Component<any, any> {
@@ -37,17 +39,20 @@ class App extends React.Component<any, any> {
     return (
       <Routes>
         <Route path='/' element={<Login />}></Route>
-        <Route path='/dashboard' element={<Dashboard />}></Route>
-        <Route path='/stok_all' element={<ListStok />}></Route>
-        <Route path='/tambah_stok_in' element={<AddStokIn />}></Route>
-        <Route path='/material_all' element={<Material />}></Route>
-        <Route path='/tambah_material' element={<AddMaterial />}></Route>
-        <Route path='/tambah_kategori' element={<AddKategoriMaterial />}></Route>
-        <Route path='/pengaturan' element={<Pengaturan />}></Route>
-        <Route path='/logout' element={<Logout />}></Route>
-        <Route path='/print/banding/:id' element={<PrintPerbandingan />}></Route>
-        <Route path='/detail' element={<DetailStok />}></Route>
-        <Route path='/print_detail' element={<PrintDetail />}></Route>
+        <Route element={<AuthCheck />}>
+          <Route path='/dashboard' element={<Dashboard />}></Route>
+          <Route path='/stok_all' element={<ListStok />}></Route>
+          <Route path='/tambah_stok_in' element={<AddStokIn />}></Route>
+          <Route path='/material_all' element={<Material />}></Route>
+          <Route path='/tambah_material' element={<AddMaterial />}></Route>
+          <Route path='/tambah_kategori' element={<AddKategoriMaterial />}></Route>
+          <Route path='/pengaturan' element={<Pengaturan />}></Route>
+          <Route path='/logout' element={<Logout />}></Route>
+          <Route path='/print/banding/:id' element={<PrintPerbandingan />}></Route>
+          <Route path='/detail' element={<DetailStok />}></Route>
+          <Route path='/print_detail' element={<PrintDetail />}></Route>
+          <Route path='/print_all' element={<PrintAll />}></Route>
+        </Route>
       </Routes>
     )
   }

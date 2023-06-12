@@ -82,6 +82,20 @@ class ListModified extends React.Component<any, any> {
             let no = 1;
             result.data.data.modified_stok.map(el => {
                 el['no'] = no++;
+                if (el.stok_out == null) {
+                    el['stok_out'] = "-"
+                } else if (el.stok_in == null) {
+                    el['stok_in'] = "-"
+                }
+                if (el.keterangan === "Stok Masuk") {
+                    el['keterangan'] = <div className='badge badge-primary'>{el.keterangan}</div>
+                } else {
+                    el['keterangan'] = <div className='badge badge-danger'>{el.keterangan}</div>
+                }
+
+                if (el?.project === undefined) {
+                    el['project'] = "-"
+                }
                 el['created_at'] = moment(el.created_at).format("DD-MM-YYYY HH:mm:ss");
                 el['updated_at'] = moment(el.updated_at).format("DD-MM-YYYY HH:mm:ss");
             })
