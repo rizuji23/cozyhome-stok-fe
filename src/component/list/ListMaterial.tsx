@@ -3,6 +3,8 @@ import DataTable from "react-data-table-component";
 import MaterialModule from "../module/MaterialModule";
 import moment from "moment";
 import System from "../module/System";
+import ModalDetailMaterial from "../modal/ModalDetailMaterial";
+import LoadingFull from "../LoadingFull";
 
 
 class ListMaterial extends React.Component<any, any> {
@@ -41,16 +43,52 @@ class ListMaterial extends React.Component<any, any> {
                     selector: row => row.updated_at,
                     sortable: true,
                 },
+                {
+                    name: "Opsi",
+                    selector: row => row.opsi,
+                }
             ],
 
             data: [],
             data_auth: localStorage.getItem("user-cozystok"),
             search: "",
             loading: true,
+            isOpen: {
+                show: false,
+                data: {},
+            },
+            loading_full: false,
         }
 
         this.handleSearch = this.handleSearch.bind(this);
         this.getMaterial = this.getMaterial.bind(this);
+        this.getDetailMaterial = this.getDetailMaterial.bind(this);
+        this.handleCloseDetail = this.handleCloseDetail.bind(this);
+    }
+
+    handleCloseDetail() {
+        this.setState({
+            isOpen: {
+                show: false,
+                data: {},
+            }
+        })
+    }
+
+    getDetailMaterial(id_material) {
+        this.setState({
+            loading_full: true,
+        });
+
+        MaterialModule.getDetailMaterial(id_material, this.state.data_auth).then((result) => {
+            this.setState({
+                isOpen: {
+                    show: true,
+                    data: result.data.data
+                },
+                loading_full: false,
+            });
+        });
     }
 
     getMaterial() {
@@ -64,6 +102,7 @@ class ListMaterial extends React.Component<any, any> {
                 el['no'] = no++;
                 el['created_at'] = moment(el.created_at, "YYYY-MM-DD").format("DD-MM-YYYY");
                 el['updated_at'] = moment(el.updated_at, "YYYY-MM-DD").format("DD-MM-YYYY");
+                el['opsi'] = <><button className="btn btn-info btn-sm" onClick={() => this.getDetailMaterial(el.id_material)}>Detail</button></>
             });
 
             this.setState({
@@ -90,6 +129,7 @@ class ListMaterial extends React.Component<any, any> {
     render(): React.ReactNode {
         return (
             <>
+                <LoadingFull display={this.state.loading_full} />
                 <div className="mt-3 mb-3 d-flex flex-row-reverse">
                     <div>
                         <input type="text" onChange={this.handleSearch} className="form-control" placeholder="Cari Nama Material" />
@@ -102,6 +142,8 @@ class ListMaterial extends React.Component<any, any> {
                         return data;
                     }
                 })} progressPending={this.state.loading} pagination />
+
+                <ModalDetailMaterial isOpen={this.state.isOpen} handleClose={this.handleCloseDetail} getMaterial={this.getMaterial} />
             </>
         )
     }

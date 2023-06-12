@@ -29,6 +29,10 @@ class ListKategori extends React.Component<any, any> {
                     selector: row => row.updated_at,
                     sortable: true,
                 },
+                {
+                    name: "Opsi",
+                    selector: row => row.opsi,
+                }
             ],
 
             data_auth: localStorage.getItem("user-cozystok"),

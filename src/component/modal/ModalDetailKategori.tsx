@@ -6,7 +6,7 @@ import System from "../module/System";
 import { toast } from "react-toastify";
 import LoadingButton from "../etc/LoadingButton";
 
-class ModalAddKategori extends React.Component<any, any> {
+class ModalDetailKategori extends React.Component<any, any> {
     constructor(props) {
         super(props);
         this.state = {
@@ -14,43 +14,15 @@ class ModalAddKategori extends React.Component<any, any> {
             disabled: true,
             loading: false,
             data_auth: localStorage.getItem("user-cozystok"),
-            data: [],
+            data: {},
+            data_material: []
         }
 
         this.validated = this.validated.bind(this);
         this.handleNamaKategori = this.handleNamaKategori.bind(this);
         this.clearState = this.clearState.bind(this);
-        this.handleSimpan = this.handleSimpan.bind(this);
-        this.getKategori = this.getKategori.bind(this);
+        this.handleEdit = this.handleEdit.bind(this);
     }
-
-
-    getKategori() {
-        this.setState({
-            loading: true,
-        })
-        MaterialModule.getKategori(this.state.data_auth).then((result) => {
-            console.log(result);
-            let no = 1;
-            result.data.data.kategori_material.map((el) => {
-                el['no'] = no++;
-                el['created_at'] = moment(el.created_at, "YYYY-MM-DD").format("DD-MM-YYYY");
-                el['updated_at'] = moment(el.updated_at, "YYYY-MM-DD").format("DD-MM-YYYY");
-            });
-
-            this.setState({
-                data: result.data.data.kategori_material,
-                loading: false,
-            });
-        }).catch((rejects) => {
-            console.log(rejects);
-        })
-    }
-
-    componentDidMount(): void {
-        this.getKategori();
-    }
-
 
     validated() {
         if (System.isObjectEmpty({ nama_kategori: this.state.nama_kategori })) {
@@ -74,23 +46,23 @@ class ModalAddKategori extends React.Component<any, any> {
         })
     }
 
-    handleSimpan() {
+    handleEdit() {
         this.setState({
             loading: true,
             disabled: true,
         })
-        MaterialModule.addKategori({ nama_kategori: this.state.nama_kategori }, this.state.data_auth).then((result) => {
+        MaterialModule.updateKategori({ nama_kategori: this.state.nama_kategori, id: this.props.isOpen.data?.kategori_material?.id_kategori_material }, this.state.data_auth).then((result) => {
             console.log(result);
-            toast.success("Kategoti Material berhasil dibuat");
+            toast.success("Kategoti Material berhasil diedit");
             this.setState({
                 loading: false,
                 disabled: true,
             });
-            this.getKategori();
             this.clearState();
-            this.props.handleClose();
+            this.props.handleClose()
+            this.props.getKategori()
         }).catch((rejects) => {
-            toast.error("Kategoti Material gagal dibuat");
+            toast.error("Kategoti Material gagal diedit");
             console.log(rejects);
             this.setState({
                 loading: false,
@@ -100,25 +72,46 @@ class ModalAddKategori extends React.Component<any, any> {
         })
     }
 
+    componentDidUpdate(prevProps: Readonly<any>, prevState: Readonly<any>, snapshot?: any): void {
+        if (prevProps.isOpen !== this.props.isOpen) {
+            console.log(this.props.isOpen)
+            this.setState({
+                nama_kategori: this.props.isOpen.data?.kategori_material?.nama_kategori,
+                data_material: this.props.isOpen.data?.material,
+            })
+        }
+    }
+
     render(): React.ReactNode {
         return (
             <>
-                <Modal show={this.props.isOpen} onHide={this.props.handleClose}>
+                <Modal show={this.props.isOpen.show} onHide={this.props.handleClose}>
                     <Modal.Header closeButton>
-                        <Modal.Title>Tambah Kategori Material Baru</Modal.Title>
+                        <Modal.Title>Detail Kategori Material</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-
                         <div className='form-group'>
                             <label htmlFor="">Nama Kategori</label>
                             <input type="text" value={this.state.nama_kategori} onChange={this.handleNamaKategori} className='form-control' />
+                        </div>
+
+                        <div>
+                            <h6>List Material: </h6>
+                            <ul className="list-group">
+                                {
+                                    this.state.data_material.map(el => {
+                                        return <li className="list-group-item">{el.nama_material}</li>
+                                    })
+                                }
+
+                            </ul>
                         </div>
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="danger" onClick={this.props.handleClose}>
                             Batal
                         </Button>
-                        <Button onClick={this.handleSimpan} className='btn btn-primary ml-2' disabled={this.state.disabled}>Tambah <LoadingButton show={this.state.loading} /></Button>
+                        <Button onClick={this.handleEdit} className='btn btn-primary ml-2' disabled={this.state.disabled}>Edit <LoadingButton show={this.state.loading} /></Button>
                     </Modal.Footer>
                 </Modal>
             </>
@@ -126,4 +119,4 @@ class ModalAddKategori extends React.Component<any, any> {
     }
 }
 
-export default ModalAddKategori;
+export default ModalDetailKategori;

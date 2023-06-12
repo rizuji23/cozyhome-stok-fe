@@ -12,12 +12,17 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
 import LoadingButton from './etc/LoadingButton';
 import ModalAddMaterial from './modal/ModalAddMaterial';
+import SelectSearch from 'react-select-search';
+import 'react-select-search/style.css'
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+const MySwal = withReactContent(Swal)
 
 class AddStokIn extends React.Component<any, any> {
     constructor(props) {
         super(props);
         this.state = {
-            comp_material: "",
+            comp_material: [],
             data_auth: localStorage.getItem("user-cozystok"),
             stok_old: {
                 nama_material: "",
@@ -75,41 +80,72 @@ class AddStokIn extends React.Component<any, any> {
     }
 
     handleSimpan() {
+        MySwal.fire({
+            title: "Apa kamu yakin?",
+            text: 'Stok yang dipilih akan tertambah.',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Iya',
+            icon: 'warning',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const data = {
+                    id_material: this.state.stok_old.id_material,
+                    stok_in: parseInt(this.state.stok_new.stok_in),
+                    keterangan: this.state.stok_new.keterangan,
+                    id_user: this.state.id_user,
+                };
+
+                console.log(data)
+
+                Stok.addIn(this.state.data_auth, data).then((result) => {
+                    console.log(result);
+                    toast.success("Stok Berhasil ditambah.");
+                    MySwal.fire({
+                        title: "Apakah ingin diprint?",
+                        text: 'Stok yang ditambah akan diprint sekarang.',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Iya',
+                        icon: 'info',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            console.log("TEST");
+                        } else {
+                            this.setState({
+                                navigation: <Navigate to={'/stok_all'} state={{ code: true, msg: "Stok berhasil ditambah" }} />
+                            })
+                        }
+                    });
+                    this.setState({
+                        loading: false,
+
+                    });
+                    this.getMaterial();
+                }).catch((rejects) => {
+                    toast.success("Stok Gagal ditambah.");
+                    console.log(rejects);
+                    this.setState({
+                        loading: false,
+                        navigation: <Navigate to={'/stok_all'} state={{ code: false, msg: "Stok gagal ditambah" }} />
+                    })
+                })
+            }
+        });
         this.setState({
             loading: true,
         })
-        const data = {
-            id_material: this.state.stok_old.id_material,
-            stok_in: parseInt(this.state.stok_new.stok_in),
-            keterangan: this.state.stok_new.keterangan,
-            id_user: this.state.id_user,
-        };
 
-        console.log(data)
-
-        Stok.addIn(this.state.data_auth, data).then((result) => {
-            console.log(result);
-            toast.success("Stok Berhasil ditambah.");
-            this.setState({
-                loading: false,
-                navigation: <Navigate to={'/stok_all'} state={{ code: true, msg: "Stok berhasil ditambah" }} />
-            });
-            this.getMaterial();
-        }).catch((rejects) => {
-            toast.success("Stok Gagal ditambah.");
-            console.log(rejects);
-            this.setState({
-                loading: false,
-                navigation: <Navigate to={'/stok_all'} state={{ code: false, msg: "Stok gagal ditambah" }} />
-            })
-        })
     }
 
     handleMaterial(e) {
-        const data = JSON.parse(e.target.value);
-        const total = parseInt(data.harga_material) * data.stok;
+        console.log(e);
+        const data = JSON.parse(e);
+        const total = parseInt(data?.harga_material || 0) * data?.stok || 0;
         console.log(data)
-        if (e.target.value.length === 0) {
+        if (e === null) {
             this.setState(prevState => ({
                 stok_old: {
                     nama_material: "",
@@ -120,6 +156,7 @@ class AddStokIn extends React.Component<any, any> {
                 }
             }), () => {
                 this.validated();
+                this.clearState();
             })
         } else {
             this.setState(prevState => ({
@@ -243,15 +280,16 @@ class AddStokIn extends React.Component<any, any> {
 
     getMaterial() {
         Stok.get(this.state.data_auth).then((result) => {
-            console.log(result);
+            console.log("result", result);
             const data = result.data.data.stok.map((el) => {
-                return (
-                    <><option value={JSON.stringify({ id_material: el.id_material_2, id_stok_gudang: el.id_stok_gudang, stok: el.stok, nama_material: el.nama_material, harga_material: el.harga_material })}>{el.nama_material} ({el.stok} pcs)</option></>
-                )
-            })
+                return {
+                    name: `${el.nama_material} (${el.stok} pcs)`,
+                    value: JSON.stringify({ id_material: el.id_material_2, id_stok_gudang: el.id_stok_gudang, stok: el.stok, nama_material: el.nama_material, harga_material: el.harga_material })
+                }
+            });
 
             this.setState({
-                comp_material: data,
+                comp_material: [{ name: 'Pilih Material', value: '' }, ...data],
             });
         }).catch((rejects) => {
             console.log(rejects);
@@ -324,10 +362,11 @@ class AddStokIn extends React.Component<any, any> {
                                 <div className='card-body'>
                                     <div className='form-group'>
                                         <label htmlFor="">Material</label>
-                                        <select name="" onChange={this.handleMaterial} className='form-control' id="">
+                                        {/* <select name="" onChange={this.handleMaterial} className='form-control' id="">
                                             <option value="{}">Pilih Material</option>
                                             {this.state.comp_material}
-                                        </select>
+                                        </select> */}
+                                        <SelectSearch options={this.state.comp_material} onChange={this.handleMaterial} search />
                                         <a href="#" onClick={this.handleOpenMaterial}>Tambah Material Baru?</a>
                                     </div>
 

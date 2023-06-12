@@ -2,11 +2,14 @@ import React from "react";
 import { Button, Modal } from "react-bootstrap";
 import System from "../module/System";
 import MaterialModule from "../module/MaterialModule";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import LoadingButton from "../etc/LoadingButton";
 import ModalAddKategori from "./ModalAddKategori";
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+const MySwal = withReactContent(Swal)
 
-class ModalAddMaterial extends React.Component<any, any> {
+class ModalDetailMaterial extends React.Component<any, any> {
     constructor(props) {
         super(props);
         this.state = {
@@ -20,6 +23,7 @@ class ModalAddMaterial extends React.Component<any, any> {
             disabled: true,
             loading: false,
             isOpen: false,
+            loading_full: false,
         }
         this.getKategori = this.getKategori.bind(this);
         this.validated = this.validated.bind(this);
@@ -27,10 +31,11 @@ class ModalAddMaterial extends React.Component<any, any> {
         this.getKategori = this.getKategori.bind(this);
         this.handleHarga = this.handleHarga.bind(this);
         this.handleKategori = this.handleKategori.bind(this);
-        this.handleSimpan = this.handleSimpan.bind(this);
+        this.handleEdit = this.handleEdit.bind(this);
         this.clearState = this.clearState.bind(this);
         this.handleOpenKategori = this.handleOpenKategori.bind(this);
         this.handleCloseKategori = this.handleCloseKategori.bind(this);
+        this.handleDelete = this.handleDelete.bind(this);
     }
 
     handleOpenKategori() {
@@ -113,30 +118,32 @@ class ModalAddMaterial extends React.Component<any, any> {
         });
     }
 
-    handleSimpan() {
+    handleEdit() {
         this.setState({
             loading: true,
             disabled: true,
-        })
+        });
         const data = {
             nama_material: this.state.material.nama_material,
             kategori_material: this.state.material.kategori,
             harga: System.convertInt(this.state.material.harga),
+            id: this.props.isOpen.data.material.id_material
         }
 
-        MaterialModule.add(data, this.state.data_auth).then((result) => {
+        MaterialModule.update(data, this.state.data_auth).then((result) => {
             console.log(result);
-            toast.success("Material berhasil ditambah");
+            toast.success("Material berhasil diedit");
             this.setState({
                 loading: false,
                 disabled: false,
             }, () => {
                 this.clearState()
-                this.props.handleClose()
+                this.props.getMaterial();
+                this.props.handleClose();
             });
         }).catch((rejects) => {
             console.log(rejects);
-            toast.error("Material gagal ditambah");
+            toast.error("Material gagal diedit");
             this.setState({
                 loading: false,
                 disabled: true,
@@ -153,19 +160,77 @@ class ModalAddMaterial extends React.Component<any, any> {
     componentDidUpdate(prevProps: Readonly<any>, prevState: Readonly<any>, snapshot?: any): void {
         if (prevProps.isOpen != this.props.isOpen) {
             this.getKategori();
+            console.log(this.props.isOpen)
+            this.setState({
+                material: {
+                    nama_material: this.props.isOpen.data?.material?.nama_material,
+                    kategori: this.props.isOpen.data?.material?.id_kategori,
+                    kategori_2: this.props.isOpen.data?.material?.nama_kategori,
+                    harga: System.convertRupiah(this.props.isOpen.data?.material?.harga || "0"),
+                    id_kategori: this.props.isOpen.data?.material?.id_kategori
+                }
+            })
         }
+    }
 
-        if (prevState.isOpen != this.state.isOpen) {
-            this.getKategori();
-        }
+    handleDelete() {
+        MySwal.fire({
+            title: "Apa kamu yakin?",
+            html: <>
+                <div className='text-left'>
+                    <p>Yang akan ikut terhapus: </p>
+                    <ul>
+                        <li>List Stok Semua</li>
+                        <li>Kebutuhan Material (Project Management)</li>
+                        <li>Harga Kebutuhan Material (Project Management)</li>
+                    </ul>
+                </div>
+            </>,
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Iya',
+            icon: 'warning',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                this.setState({
+                    loading_full: true,
+                });
+
+                MaterialModule.delete(this.props.isOpen.data.material.id_material, this.state.data_auth).then((result) => {
+                    this.setState({
+                        loading_full: false,
+                    });
+
+                    this.clearState()
+                    this.props.getMaterial();
+                    this.props.handleClose();
+                    toast.success("Material berhasil dihapus.");
+                }).catch((err) => {
+                    toast.error("Material gagal dihapus.");
+                })
+            }
+        })
     }
 
     render(): React.ReactNode {
         return (
             <>
-                <Modal show={this.props.isOpen} onHide={this.props.handleClose}>
+                <ToastContainer
+                    position="top-right"
+                    autoClose={5000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme="light"
+                />
+                <Modal show={this.props.isOpen.show} onHide={this.props.handleClose}>
                     <Modal.Header closeButton>
-                        <Modal.Title>Tambah Material Baru</Modal.Title>
+                        <Modal.Title>Detail Material Baru</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                         <div className='form-group'>
@@ -176,6 +241,7 @@ class ModalAddMaterial extends React.Component<any, any> {
                         <div className='form-group mt-3'>
                             <label htmlFor="">Kategori</label>
                             <select name="" onChange={this.handleKategori} className='form-control' id="">
+                                <option value={this.state.material.kategori}>{this.state.material.kategori_2}</option>
                                 <option value="">Pilih Kategori</option>
                                 {this.state.kategori}
                             </select>
@@ -184,14 +250,22 @@ class ModalAddMaterial extends React.Component<any, any> {
 
                         <div className='form-group mt-3'>
                             <label htmlFor="">Harga</label>
-                            <input type="text" value={System.convertRupiah(this.state.material.harga)} onChange={this.handleHarga} className='form-control' />
+                            <input type="text" value={this.state.material.harga} onChange={this.handleHarga} className='form-control' />
+                        </div>
+
+                        <div className="alert alert-danger">
+                            <div className="d-flex">
+                                <b className="flex-grow-1">Zona Berbahaya</b>
+                                <button className="btn btn-danger btn-sm" onClick={this.handleDelete}>Hapus</button>
+                            </div>
+
                         </div>
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="danger" onClick={this.props.handleClose}>
                             Batal
                         </Button>
-                        <Button className='btn btn-primary' onClick={this.handleSimpan} disabled={this.state.disabled}>Tambah <LoadingButton show={this.state.loading} /></Button>
+                        <Button className='btn btn-primary' onClick={this.handleEdit} disabled={this.state.disabled}>Edit <LoadingButton show={this.state.loading} /></Button>
                     </Modal.Footer>
                 </Modal>
 
@@ -202,4 +276,4 @@ class ModalAddMaterial extends React.Component<any, any> {
     }
 }
 
-export default ModalAddMaterial;
+export default ModalDetailMaterial;

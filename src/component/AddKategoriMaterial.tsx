@@ -13,6 +13,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
 import moment from 'moment';
 import ModalAddKategori from './modal/ModalAddKategori';
+import ModalDetailKategori from './modal/ModalDetailKategori';
+import LoadingFull from './LoadingFull';
 
 class AddKategoriMaterial extends React.Component<any, any> {
     constructor(props) {
@@ -23,6 +25,11 @@ class AddKategoriMaterial extends React.Component<any, any> {
             loading: false,
             data_auth: localStorage.getItem("user-cozystok"),
             data: [],
+            isOpen: {
+                show: false,
+                data: {},
+            },
+            loading_full: false,
         }
 
         this.validated = this.validated.bind(this);
@@ -30,12 +37,50 @@ class AddKategoriMaterial extends React.Component<any, any> {
         this.clearState = this.clearState.bind(this);
         this.handleSimpan = this.handleSimpan.bind(this);
         this.getKategori = this.getKategori.bind(this);
+        this.getDetailKategori = this.getDetailKategori.bind(this);
+        this.handleOpen = this.handleOpen.bind(this);
+        this.handleClose = this.handleClose.bind(this);
 
+    }
+
+    handleOpen(data) {
+        this.setState({
+            isOpen: {
+                show: true,
+                data: data,
+            }
+        })
+    }
+
+    handleClose() {
+        this.setState({
+            isOpen: {
+                show: false,
+                data: {
+                    kategori_material: {},
+                    material: []
+                }
+            }
+        })
+    }
+
+    getDetailKategori(id) {
+        this.setState({
+            loading_full: true,
+        })
+        MaterialModule.getDetailKategori(id, this.state.data_auth).then((result) => {
+            console.log(result);
+            this.handleOpen(result.data.data)
+            this.setState({
+                loading_full: false,
+            })
+        })
     }
 
     getKategori() {
         this.setState({
             loading: true,
+            loading_full: true,
         })
         MaterialModule.getKategori(this.state.data_auth).then((result) => {
             console.log(result);
@@ -44,11 +89,14 @@ class AddKategoriMaterial extends React.Component<any, any> {
                 el['no'] = no++;
                 el['created_at'] = moment(el.created_at, "YYYY-MM-DD").format("DD-MM-YYYY");
                 el['updated_at'] = moment(el.updated_at, "YYYY-MM-DD").format("DD-MM-YYYY");
+                el['opsi'] = <><button onClick={() => this.getDetailKategori(el.id_kategori_material)} className='btn btn-info btn-sm'>Detail</button></>
             });
 
             this.setState({
                 data: result.data.data.kategori_material,
                 loading: false,
+                loading_full: false,
+
             });
         }).catch((rejects) => {
             console.log(rejects);
@@ -111,6 +159,7 @@ class AddKategoriMaterial extends React.Component<any, any> {
         return (
             <>
                 <HelmetTitle title="Tambah Kategori Material" />
+                <LoadingFull display={this.state.loading_full} />
 
                 <ToastContainer
                     position="top-right"
@@ -166,7 +215,7 @@ class AddKategoriMaterial extends React.Component<any, any> {
                         </div>
                     </div>
                 </div>
-
+                <ModalDetailKategori isOpen={this.state.isOpen} handleClose={this.handleClose} getKategori={this.getKategori} />
             </>
         )
     }

@@ -13,6 +13,8 @@ import Pengaturan from './component/Pengaturan';
 import { withRouter } from './component/etc/withRouter';
 import Logout from './component/etc/Logout';
 import PrintPerbandingan from './component/print/PrintPerbandingan';
+import DetailStok from './component/DetailStok';
+import PrintDetail from './component/print/PrintDetail';
 
 
 class App extends React.Component<any, any> {
@@ -44,6 +46,8 @@ class App extends React.Component<any, any> {
         <Route path='/pengaturan' element={<Pengaturan />}></Route>
         <Route path='/logout' element={<Logout />}></Route>
         <Route path='/print/banding/:id' element={<PrintPerbandingan />}></Route>
+        <Route path='/detail' element={<DetailStok />}></Route>
+        <Route path='/print_detail' element={<PrintDetail />}></Route>
       </Routes>
     )
   }

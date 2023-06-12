@@ -65,7 +65,7 @@ class ListAll extends React.Component<any, any> {
                 el['no'] = no++;
                 el['created_at'] = moment(el.created_at).format("DD-MM-YYYY HH:mm:ss");
                 el['updated_at'] = moment(el.updated_at).format("DD-MM-YYYY HH:mm:ss");
-                el['opsi'] = <><Link to={`/print/stok/${el.id_stok_gudang}`} className="btn btn-info btn-sm">Print</Link></>
+                el['opsi'] = <><Link to={`/detail`} state={{ id: el.id_stok_gudang }} className="btn btn-info btn-sm">Detail</Link></>
             })
 
             this.setState(prevState => ({
