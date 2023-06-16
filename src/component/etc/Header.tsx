@@ -65,7 +65,7 @@ class Header extends React.Component<any, any> {
                         </div>
 
                         <div className="d-flex">
-                            <div className="dropdown d-inline-block">
+                            {/* <div className="dropdown d-inline-block">
                                 <button type="button" className="btn header-item noti-icon waves-effect" id="page-header-notifications-dropdown"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <i className="mdi mdi-bell-outline"></i>
@@ -150,7 +150,7 @@ class Header extends React.Component<any, any> {
                                         </a>
                                     </div>
                                 </div>
-                            </div>
+                            </div> */}
 
                             <div className="dropdown d-inline-block">
                                 <button type="button" onClick={() => document.location.href = '/pengaturan'} className="btn header-item waves-effect">

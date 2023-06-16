@@ -7,6 +7,8 @@ import InfoDashboard from './InfoDashboard';
 
 import ReactApexChart from "react-apexcharts";
 import { Link } from 'react-router-dom';
+import Analisis from './module/Analisis';
+import System from './module/System';
 
 class Dashboard extends React.Component<any, any> {
     constructor(props) {
@@ -33,7 +35,7 @@ class Dashboard extends React.Component<any, any> {
                         curve: 'smooth'
                     },
                     xaxis: {
-                        type: 'datetime',
+                        type: 'date',
                         categories: ["2018-09-19T00:00:00.000Z", "2018-09-19T01:30:00.000Z", "2018-09-19T02:30:00.000Z", "2018-09-19T03:30:00.000Z", "2018-09-19T04:30:00.000Z", "2018-09-19T05:30:00.000Z", "2018-09-19T06:30:00.000Z"]
                     },
                     tooltip: {
@@ -102,7 +104,7 @@ class Dashboard extends React.Component<any, any> {
                     },
                     yaxis: {
                         title: {
-                            text: 'Rp (thousands)'
+                            text: 'Rp (Rupiah)'
                         }
                     },
                     fill: {
@@ -111,13 +113,58 @@ class Dashboard extends React.Component<any, any> {
                     tooltip: {
                         y: {
                             formatter: function (val) {
-                                return "$ " + val + " thousands"
+                                return "Rp. " + System.convertRupiah(val)
                             }
                         }
                     }
                 },
-            }
+            },
+            data_auth: localStorage.getItem("user-cozystok"),
         }
+
+        this.getAnalisis = this.getAnalisis.bind(this);
+    }
+
+    componentDidMount(): void {
+        this.getAnalisis();
+    }
+
+    getAnalisis() {
+        Analisis.get(this.state.data_auth).then((result) => {
+            console.log("analisis", result);
+            const data_keuangan = Analisis.calculateKeuangan(result.data.data.keuangan);
+            const data = Analisis.calculateStok(result.data.data.stok);
+            const data_kategori = Analisis.calculatePerbandingan(result.data.data.perbandingan);
+            this.setState(prevState => ({
+                chart_keuangan: {
+                    ...prevState.chart_keuangan,
+                    series: data_keuangan.series,
+                    options: {
+                        ...prevState.options,
+                        xaxis: {
+                            categories: data_keuangan.categories
+                        }
+                    }
+                },
+
+                chart_stok: {
+                    ...prevState.chart_stok,
+                    series: data.series,
+                    options: {
+                        ...prevState.options,
+                        xaxis: {
+                            ...prevState.xaxis,
+                            categories: data.categories
+                        }
+                    }
+                },
+
+                chart_between: {
+                    ...prevState.chart_between,
+                    series: data_kategori.series,
+                }
+            }))
+        })
     }
 
     render(): React.ReactNode {
@@ -151,7 +198,7 @@ class Dashboard extends React.Component<any, any> {
                                     <div className="card">
                                         <div className="card-body">
                                             <h4 className="header-title mb-4">Statistik Stok Masuk/Keluar</h4>
-                                            <div className="row justify-content-center">
+                                            {/* <div className="row justify-content-center">
                                                 <div className="col-sm-4">
                                                     <div className="text-center">
                                                         <p>Total Asset Bulan Ini</p>
@@ -164,7 +211,7 @@ class Dashboard extends React.Component<any, any> {
                                                         <h4>Rp. 15.000.000</h4>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            </div> */}
                                             <ReactApexChart options={this.state.chart_stok.options} series={this.state.chart_stok.series} type="area" height={350} />
 
                                         </div>

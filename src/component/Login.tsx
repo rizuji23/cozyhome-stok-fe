@@ -127,11 +127,19 @@ class Login extends React.Component<any, any> {
                                                     <div className="col-md-12">
                                                         <div className="form-group mb-4">
                                                             <label htmlFor="username">Username</label>
-                                                            <input type="text" value={this.state.login.username} onChange={this.handleUsername} className="form-control" id="username" placeholder="Enter username" />
+                                                            <input type="text" value={this.state.login.username} onChange={this.handleUsername} onKeyUp={(e) => {
+                                                                if (e.key === "Enter") {
+                                                                    this.handleLogin();
+                                                                }
+                                                            }} className="form-control" id="username" placeholder="Enter username" />
                                                         </div>
                                                         <div className="form-group mb-4">
                                                             <label htmlFor="userpassword">Password</label>
-                                                            <input type="password" value={this.state.login.password} onChange={this.handlePassword} className="form-control" id="userpassword" placeholder="Enter password" />
+                                                            <input type="password" value={this.state.login.password} onKeyUp={(e) => {
+                                                                if (e.key === "Enter") {
+                                                                    this.handleLogin();
+                                                                }
+                                                            }} onChange={this.handlePassword} className="form-control" id="userpassword" placeholder="Enter password" />
                                                             {this.state.msg_password}
                                                         </div>
 
