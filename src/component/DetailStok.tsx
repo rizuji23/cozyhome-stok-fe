@@ -52,6 +52,11 @@ class DetailStok extends React.Component<any, any> {
                     sortable: true,
                 },
                 {
+                    name: "Nama Toko",
+                    selector: row => row.nama_toko,
+                    sortable: true,
+                },
+                {
                     name: "Project",
                     selector: row => row.project,
                     sortable: true,
@@ -108,7 +113,7 @@ class DetailStok extends React.Component<any, any> {
     getDetail() {
         console.log(this.props.location.state);
         Stok.getDetail(this.props.location.state.id, this.state.data_auth).then((result) => {
-            console.log(result);
+            console.log("DAWD", result);
             let no = 1;
             result.data.data.modified.map((el) => {
                 el['no'] = no++;
@@ -121,6 +126,10 @@ class DetailStok extends React.Component<any, any> {
                     el['keterangan'] = <div className='badge badge-primary'>{el.keterangan}</div>
                 } else {
                     el['keterangan'] = <div className='badge badge-danger'>{el.keterangan}</div>
+                }
+
+                if (el.nama_toko == null) {
+                    el['nama_toko'] = "-"
                 }
 
                 if (el?.project === undefined) {

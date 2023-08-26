@@ -1,6 +1,7 @@
 import React from "react";
 import Stok from "./module/Stok";
 import System from "./module/System";
+import CountAlat from "./etc/CountAlat";
 
 class InfoDashboard extends React.Component<any, any> {
     constructor(props) {
@@ -148,6 +149,8 @@ class InfoDashboard extends React.Component<any, any> {
                         </div>
                     </div>
                 </div>
+
+                <CountAlat />
             </>
         )
     }

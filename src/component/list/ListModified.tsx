@@ -12,6 +12,7 @@ class ListModified extends React.Component<any, any> {
                     name: "No",
                     selector: row => row.no,
                     sortable: true,
+                    width: "65px"
                 },
                 {
                     name: "Nama Material",
@@ -27,16 +28,19 @@ class ListModified extends React.Component<any, any> {
                     name: "Stok",
                     selector: row => row.stok,
                     sortable: true,
+                    width: "75px"
                 },
                 {
                     name: "Stok Masuk",
                     selector: row => row.stok_in,
                     sortable: true,
+                    width: "109px"
                 },
                 {
                     name: "Stok Out",
                     selector: row => row.stok_out,
                     sortable: true,
+                    width: "98px"
                 },
                 {
                     name: "Last Stok",
@@ -46,6 +50,16 @@ class ListModified extends React.Component<any, any> {
                 {
                     name: "Keterangan",
                     selector: row => row.keterangan,
+                    sortable: true,
+                },
+                {
+                    name: "Project",
+                    selector: row => row.project,
+                    sortable: true,
+                },
+                {
+                    name: "Nama Toko",
+                    selector: row => row.nama_toko,
                     sortable: true,
                 },
                 {
@@ -96,6 +110,11 @@ class ListModified extends React.Component<any, any> {
                 if (el?.project === undefined) {
                     el['project'] = "-"
                 }
+
+                if (el.nama_toko == null) {
+                    el['nama_toko'] = "-"
+                }
+
                 el['created_at'] = moment(el.created_at).format("DD-MM-YYYY HH:mm:ss");
                 el['updated_at'] = moment(el.updated_at).format("DD-MM-YYYY HH:mm:ss");
             })

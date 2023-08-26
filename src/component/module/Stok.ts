@@ -332,6 +332,103 @@ class Stok {
             });
         });
     }
+
+    static async getTokoMaterial(data, data_auth):Promise<any> {
+        const auth:any = JSON.parse(data_auth);
+        return new Promise((res, rej) => {
+            axios({
+                url: "/api/v1/nama_toko/",
+                method: "GET",
+                headers: {
+                    Accept: "application/json",
+                    "Authorization": "Bearer " + auth.access
+                },
+                params: data
+            }).then((result) => {
+                console.log(result);
+                if (result.status === 200) {
+                    res({response: true, data: result.data})
+                } else {
+                    rej({response: false, data: "invalid"});
+                }
+            }).catch((reject) => {
+                rej({response: false, data: "error"});
+            });
+        });
+    }
+
+    static async getAlat(data, data_auth):Promise<any> {
+        const auth:any = JSON.parse(data_auth);
+        return new Promise((res, rej) => {
+            axios({
+                url: "/api/v1/alat/",
+                method: "GET",
+                headers: {
+                    Accept: "application/json",
+                    "Authorization": "Bearer " + auth.access
+                },
+                params: data
+            }).then((result) => {
+                console.log(result);
+                if (result.status === 200) {
+                    res({response: true, data: result.data})
+                } else {
+                    rej({response: false, data: "invalid"});
+                }
+            }).catch((reject) => {
+                console.log("DAWDAWDAWDASDASD", reject)
+                rej({response: false, data: "error"});
+            });
+        });
+    }
+
+    static async getCountAlat(data_auth):Promise<any> {
+        const auth:any = JSON.parse(data_auth);
+        return new Promise((res, rej) => {
+            axios({
+                url: "/api/v1/get_count_alats/",
+                method: "GET",
+                headers: {
+                    Accept: "application/json",
+                    "Authorization": "Bearer " + auth.access
+                },
+            }).then((result) => {
+                console.log(result);
+                if (result.status === 200) {
+                    res({response: true, data: result.data})
+                } else {
+                    rej({response: false, data: "invalid"});
+                }
+            }).catch((reject) => {
+                console.log("DAWDAWDAWDASDASD", reject)
+                rej({response: false, data: "error"});
+            });
+        });
+    }
+
+    static async addAlat(data, data_auth):Promise<any> {
+        const auth:any = JSON.parse(data_auth);
+        return new Promise((res, rej) => {
+            axios({
+                url: "/api/v1/alat/",
+                method: "POST",
+                headers: {
+                    Accept: "application/json",
+                    "Authorization": "Bearer " + auth.access
+                },
+                data: data
+            }).then((result) => {
+                console.log(result);
+                if (result.status === 201) {
+                    res({response: true, data: result.data})
+                } else {
+                    rej({response: false, data: "invalid"});
+                }
+            }).catch((reject) => {
+                rej({response: false, data: "error"});
+            });
+        });
+    }
 }
 
 export default Stok;

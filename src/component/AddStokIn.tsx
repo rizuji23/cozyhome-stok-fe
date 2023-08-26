@@ -15,7 +15,9 @@ import ModalAddMaterial from './modal/ModalAddMaterial';
 import SelectSearch from 'react-select-search';
 import 'react-select-search/style.css'
 import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import withReactContent from 'sweetalert2-react-content';
+import CreatableSelect from 'react-select/creatable';
+
 const MySwal = withReactContent(Swal)
 
 class AddStokIn extends React.Component<any, any> {
@@ -36,7 +38,8 @@ class AddStokIn extends React.Component<any, any> {
                 total_stok: 0,
                 sum_harga: 0,
                 now_harga: 0,
-                keterangan: ""
+                keterangan: "",
+                nama_toko: "",
             },
             msg_material: "",
             msg_stok: "",
@@ -45,6 +48,7 @@ class AddStokIn extends React.Component<any, any> {
             loading: false,
             navigation: false,
             isOpen: false,
+            toko_material: [],
         }
 
         this.getMaterial = this.getMaterial.bind(this);
@@ -55,7 +59,9 @@ class AddStokIn extends React.Component<any, any> {
         this.clearState = this.clearState.bind(this);
         this.handleOpenMaterial = this.handleOpenMaterial.bind(this);
         this.handleCloseMaterial = this.handleCloseMaterial.bind(this);
+        this.handleNamaToko = this.handleNamaToko.bind(this);
     }
+
 
     clearState() {
         this.setState(prevState => ({
@@ -64,7 +70,8 @@ class AddStokIn extends React.Component<any, any> {
                 total_stok: 0,
                 sum_harga: 0,
                 now_harga: 0,
-                keterangan: ""
+                keterangan: "",
+                nama_toko: "",
             },
             disabled: true,
             loading: false,
@@ -72,7 +79,7 @@ class AddStokIn extends React.Component<any, any> {
     }
 
     validated() {
-        if (System.isObjectEmpty({ stok_in: this.state.stok_new.stok_in, id_material: this.state.stok_old.id_material, keterangan: this.state.stok_new.keterangan })) {
+        if (System.isObjectEmpty({ stok_in: this.state.stok_new.stok_in, id_material: this.state.stok_old.id_material, nama_toko: this.state.stok_new.nama_toko })) {
             this.setState({ disabled: false });
         } else {
             this.setState({ disabled: true });
@@ -95,6 +102,7 @@ class AddStokIn extends React.Component<any, any> {
                     stok_in: parseInt(this.state.stok_new.stok_in),
                     keterangan: this.state.stok_new.keterangan,
                     id_user: this.state.id_user,
+                    nama_toko: this.state.stok_new.nama_toko
                 };
 
                 console.log(data)
@@ -307,8 +315,37 @@ class AddStokIn extends React.Component<any, any> {
         })
     }
 
+    handleNamaToko(e) {
+        console.log(e.value);
+        this.setState(prevState => ({
+            stok_new: {
+                ...prevState.stok_new,
+                nama_toko: e?.value,
+            }
+        }), () => {
+            this.validated();
+        })
+    }
+
+    getTokoMaterial() {
+        Stok.getTokoMaterial({ id: 'all' }, this.state.data_auth).then((result) => {
+            const data = result.data.data.toko.map((el) => {
+                return {
+                    label: el.nama_toko,
+                    value: el.id_toko_material
+                }
+            });
+
+            this.setState({
+                toko_material: data
+            })
+        })
+    }
+
+
     componentDidMount(): void {
         this.getMaterial();
+        this.getTokoMaterial();
     }
 
     handleOpenMaterial() {
@@ -377,10 +414,16 @@ class AddStokIn extends React.Component<any, any> {
                                     </div>
 
                                     <div className='form-group mt-3'>
+                                        <label htmlFor="">Nama Toko</label>
+                                        <CreatableSelect isClearable options={this.state.toko_material} onChange={this.handleNamaToko} />
+                                        <small><span className='text-danger'>*</span>Ketik lalu enter jika ingin menambah data yang baru.</small>
+                                    </div>
+
+                                    {/* <div className='form-group mt-3'>
                                         <label htmlFor="">Keterangan</label>
                                         <textarea name="" className='form-control' onChange={this.handleKeterangan} id="" cols={30} rows={10}></textarea>
 
-                                    </div>
+                                    </div> */}
 
                                     <div className='d-flex'>
                                         <div className='mr-5'>

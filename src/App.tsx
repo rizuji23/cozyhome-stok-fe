@@ -17,6 +17,7 @@ import DetailStok from './component/DetailStok';
 import PrintDetail from './component/print/PrintDetail';
 import AuthCheck from './component/AuthCheck';
 import PrintAll from './component/print/PrintAll';
+import AddAlat from './component/AddAlat';
 
 
 class App extends React.Component<any, any> {
@@ -52,6 +53,7 @@ class App extends React.Component<any, any> {
           <Route path='/detail' element={<DetailStok />}></Route>
           <Route path='/print_detail' element={<PrintDetail />}></Route>
           <Route path='/print_all' element={<PrintAll />}></Route>
+          <Route path='/alat' element={<AddAlat />}></Route>
         </Route>
       </Routes>
     )
