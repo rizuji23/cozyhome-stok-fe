@@ -1,5 +1,7 @@
 import React from 'react';
 import Auth from '../module/Auth';
+import { NavLink, Offcanvas } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 class Header extends React.Component<any, any> {
     constructor(props) {
@@ -7,6 +9,7 @@ class Header extends React.Component<any, any> {
         this.state = {
             nama: JSON.parse(localStorage.getItem("user-cozystok")).name,
             img: "",
+            open: false,
         }
     }
 
@@ -31,6 +34,18 @@ class Header extends React.Component<any, any> {
         if (prevProps.change !== this.props.change) {
             this.getUserDetail();
         }
+    }
+
+    open() {
+        this.setState({
+            open: true
+        })
+    }
+
+    close() {
+        this.setState({
+            open: false,
+        })
     }
 
     render(): React.ReactNode {
@@ -59,7 +74,7 @@ class Header extends React.Component<any, any> {
                                 </a>
                             </div>
 
-                            <button type="button" className="btn btn-sm px-3 font-size-24 header-item waves-effect" id="vertical-menu-btn">
+                            <button type="button" onClick={() => this.open()} className="btn btn-sm px-3 font-size-24 header-item waves-effect">
                                 <i className="mdi mdi-backburger"></i>
                             </button>
                         </div>
@@ -154,14 +169,68 @@ class Header extends React.Component<any, any> {
 
                             <div className="dropdown d-inline-block">
                                 <button type="button" onClick={() => document.location.href = '/pengaturan'} className="btn header-item waves-effect">
-                                    <img className="rounded-circle header-profile-user" width={60} src={`https://cozyhome.api.weworks.ink${this.state.img}`}
+                                    <img className="rounded-circle header-profile-user" width={60} src={`https://apimanagement.inicozyhome.com${this.state.img}`}
                                         alt="Header Avatar" />
                                     <span className="d-none d-sm-inline-block ml-1">{this.state.nama}</span>
                                 </button>
                             </div>
                         </div>
                     </div>
+
+                    <Offcanvas show={this.state.open} onHide={() => this.close()}>
+                        <Offcanvas.Header closeButton>
+                            <Offcanvas.Title>Menu</Offcanvas.Title>
+                        </Offcanvas.Header>
+                        <Offcanvas.Body>
+                            <ul className="metismenu list-unstyled" id="side-menu">
+                                <li className='p-3'>
+                                    <NavLink className="waves-effect" href="/dashboard">
+                                        <span className="mdi mdi-view-dashboard"></span>&nbsp;&nbsp;&nbsp;
+                                        <span>Dashboard</span>
+                                    </NavLink>
+                                </li>
+
+                                <li className='p-3'>
+                                    <NavLink className="waves-effect" href="/stok_all">
+                                        <span className="mdi mdi-basket"></span>&nbsp;&nbsp;&nbsp;
+                                        <span>List Stok</span>
+                                    </NavLink>
+                                </li>
+
+                                <li className='p-3'>
+                                    <NavLink className="waves-effect" href="/material_all">
+                                        <span className="mdi mdi-toolbox"></span>&nbsp;&nbsp;&nbsp;
+                                        <span>List Material</span>
+                                    </NavLink>
+                                </li>
+
+                                <li className='p-3'>
+                                    <NavLink className="waves-effect" href="/alat">
+                                        <span className="mdi mdi-tools"></span>&nbsp;&nbsp;&nbsp;
+                                        <span>List Alat</span>
+                                    </NavLink>
+                                </li>
+
+                                <li className='p-3'>
+                                    <NavLink className="waves-effect" href="/pengaturan">
+                                        <span className="mdi mdi-cogs"></span>&nbsp;&nbsp;&nbsp;
+                                        <span>Pengaturan</span>
+                                    </NavLink>
+                                </li>
+
+                                <li className='p-3'>
+                                    <NavLink className="waves-effect" href="/logout">
+                                        <span className="mdi mdi-logout"></span>&nbsp;&nbsp;&nbsp;
+                                        <span>Logout</span>
+                                    </NavLink>
+                                </li>
+
+                            </ul>
+                        </Offcanvas.Body>
+                    </Offcanvas>
                 </header>
+
+
             </>
         )
     }

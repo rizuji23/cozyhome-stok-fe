@@ -92,7 +92,7 @@ class ListModified extends React.Component<any, any> {
         });
 
         Stok.getModifiedIn({ sort: this.state.sort }, this.state.data_auth).then((result) => {
-
+            console.log(result.data.data.modified_stok)
             let no = 1;
             result.data.data.modified_stok.map(el => {
                 el['no'] = no++;
@@ -166,7 +166,7 @@ class ListModified extends React.Component<any, any> {
                         </select>
                     </div>
                     <div>
-                        <input type="text" onChange={this.handleSearch} className="form-control" placeholder="Cari Nama Material" />
+                        <input type="text" onChange={this.handleSearch} className="form-control" placeholder="Cari Semua data" />
                     </div>
 
                 </div>
@@ -174,6 +174,14 @@ class ListModified extends React.Component<any, any> {
                     if (this.state.search === "") {
                         return data;
                     } else if (data.nama_material.toLowerCase().includes(this.state.search.toLowerCase())) {
+                        return data;
+                    } else if (data.nama_toko.toLowerCase().includes(this.state.search.toLowerCase())) {
+                        return data;
+                    } else if (data.created_at.toLowerCase().includes(this.state.search.toLowerCase())) {
+                        return data;
+                    } else if (data.project.toLowerCase().includes(this.state.search.toLowerCase())) {
+                        return data;
+                    } else if (data.kategori_material.toLowerCase().includes(this.state.search.toLowerCase())) {
                         return data;
                     }
                 })} pagination />

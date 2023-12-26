@@ -46,6 +46,13 @@ class Sidebar extends React.Component<any, any> {
                                 </li>
 
                                 <li>
+                                    <NavLink className="waves-effect" href="/list_harga">
+                                        <span className="mdi mdi-currency-usd"></span>&nbsp;&nbsp;&nbsp;
+                                        <span>List Harga</span>
+                                    </NavLink>
+                                </li>
+
+                                <li>
                                     <NavLink className="waves-effect" href="/pengaturan">
                                         <span className="mdi mdi-cogs"></span>&nbsp;&nbsp;&nbsp;
                                         <span>Pengaturan</span>
