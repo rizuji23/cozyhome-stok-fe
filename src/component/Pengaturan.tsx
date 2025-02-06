@@ -247,7 +247,7 @@ class Pengaturan extends React.Component<any, any> {
 
                                     <div className="d-flex">
                                         <div>
-                                            <img className="rounded-circle" width={60} src={`https://apimanagement.inicozyhome.com${this.state.img}`}
+                                            <img className="rounded-circle" width={60} src={`https://apicozy.rlstudio.my.id${this.state.img}`}
                                                 alt="Header Avatar" />
                                         </div>
                                         <div className="align-self-center ml-3">

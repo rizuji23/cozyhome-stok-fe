@@ -169,7 +169,7 @@ class Header extends React.Component<any, any> {
 
                             <div className="dropdown d-inline-block">
                                 <button type="button" onClick={() => document.location.href = '/pengaturan'} className="btn header-item waves-effect">
-                                    <img className="rounded-circle header-profile-user" width={60} src={`https://apimanagement.inicozyhome.com${this.state.img}`}
+                                    <img className="rounded-circle header-profile-user" width={60} src={`https://apicozy.rlstudio.my.id${this.state.img}`}
                                         alt="Header Avatar" />
                                     <span className="d-none d-sm-inline-block ml-1">{this.state.nama}</span>
                                 </button>
